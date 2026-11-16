@@ -11,7 +11,7 @@ Turns an app into finished store images in two independent parts:
 2. **Compose** each image: background, caption, framed phone, optional zoomed callout.
 
 Part 2 only needs PNG captures, so it also works on screenshots the user already has.
-Two steps are optional and never required: Rotato 3D frames, and Gemini-generated photos.
+Two steps are optional and never required: Rotato 3D frames, and Gemini-generated test images.
 
 `$SKILL` below is this folder: `~/.claude/skills/store-screenshots`.
 
@@ -101,23 +101,39 @@ Then add `"framedDir": "framed/ios"` to that set. `compose.js` trims each render
 - The device must exist in Rotato's catalog. If the wanted Android phone is missing, use plain frames for that set.
 - Callouts on a Rotato frame assume the screen sits at `screenInset` `{ "x": 0.039, "y": 0.019, "w": 0.921 }` of the device (measured on iPhone 17 Pro Max and Pixel 10 front renders). If a callout lands off its target, set `screenInset` on the set.
 
-### Optional: a generated person or scene (Gemini API)
+### Optional: generated test images (Gemini API)
 
-Only when a screen needs a photo the app cannot supply, such as a person doing an exercise in a camera view.
+Only when a screen needs a realistic image as sample data and the user has none to give. It covers anything the app would normally get from a camera or photo library:
+
+| App kind | Example image |
+|---|---|
+| Pose, fitness, rehab | A person doing the movement, full body |
+| Food, nutrition | A plated meal from above |
+| Skin, dermatology | A close-up of skin on a forearm |
+| Shopping, scanning | A product on a table, a receipt, a label |
+| Home, travel, plants | A room, a street, a houseplant |
 
 ```bash
 export GEMINI_API_KEY=...        # the user's own key, set in their shell; never store it in a file
 python3 $SKILL/scripts/gemini_image.py --list-models
+
+# One image
+python3 $SKILL/scripts/gemini_image.py --prompt "Grilled salmon with brown rice and broccoli on a white plate, from above, phone-camera photo, natural light" \
+  --aspect 4:3 --out work/images/meal.png
+
+# A series that must match: send the first image back as a reference
 python3 $SKILL/scripts/gemini_image.py --prompt "A man in a living room raising his right arm overhead, full body, phone-camera photo" \
-  --aspect 3:4 --out work/photos/flexion.png
+  --aspect 3:4 --out work/images/pose-1.png
 python3 $SKILL/scripts/gemini_image.py --prompt "Same man, same room, arm out to the side" \
-  --reference work/photos/flexion.png --out work/photos/abduction.png
+  --reference work/images/pose-1.png --out work/images/pose-2.png
 ```
 
 - If `GEMINI_API_KEY` is not set, stop and ask the user to set it. Do not look for keys in files or use a browser session instead.
-- `--reference` keeps the same person and room across photos. Mirroring an image is a cheap way to get the other arm.
-- Put the photo into the app the normal way (photo picker or the sample-data hook), then capture as in Part 1.
-- Every output gets a `.ai.json` sidecar recording that it is AI-generated. Tell the user which finished images contain generated content. Google Play asks about AI-generated listing assets when they are uploaded; those images should be labelled there. Never present a generated person as a real user or patient.
+- Describe it the way the app's users would shoot it (phone camera, ordinary light, ordinary setting) so the result looks like real input, not a stock photo.
+- `--reference` keeps the same subject and setting across images: the same person, the same plate, the same room. Mirroring an image is a cheap way to get a left/right variant.
+- Put the image into the app the normal way (photo picker or the sample-data hook), then capture as in Part 1. What the app shows for it must be the app's real output for that image, or clearly sample data.
+- Every output gets a `.ai.json` sidecar recording that it is AI-generated. Tell the user which finished images contain generated content. Google Play asks about AI-generated listing assets when they are uploaded; those images should be labelled there.
+- Never present a generated person as a real user or patient, and never pass a generated image off as a real result, such as a real medical case or a real customer's order.
 - This script has had less real-world use than the rest of the skill. Review its output closely the first time, and pass `--model` if the automatically chosen model is not the one you want.
 
 ## Sizes

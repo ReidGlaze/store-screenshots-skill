@@ -15,7 +15,7 @@ It captures real screens from the iOS simulator and Android emulator, then puts 
 Two steps are optional:
 
 - **Rotato frames.** If [Rotato](https://rotato.app) is installed and reachable, the phone can be a 3D device render. Otherwise a plain frame is drawn in code, which is the default.
-- **Generated photos.** If a screen needs a person or a scene the app cannot supply, a script can generate one with the Gemini API using your own key.
+- **Generated test images.** If a screen needs a realistic image as sample data that you don't have (a person for a pose app, a meal for a food app, a skin photo for a dermatology app, a product, a room), a script can generate one with the Gemini API using your own key.
 
 ## Requirements
 
@@ -27,7 +27,7 @@ Two steps are optional:
 | Node.js 18+ and [Playwright](https://playwright.dev) | Composing the images |
 | Python 3 | The check script and the optional Gemini script |
 | Rotato (optional) | 3D device frames |
-| `GEMINI_API_KEY` environment variable (optional) | Generated person or scene photos |
+| `GEMINI_API_KEY` environment variable (optional) | Generated test images used as sample data |
 
 You only need the tools for the parts you use. Composing works on any PNG screenshots you already have.
 

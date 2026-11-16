@@ -1,20 +1,30 @@
 #!/usr/bin/env python3
-"""OPTIONAL: generate a person or scene photo with the Gemini API.
+"""OPTIONAL: generate a realistic test image with the Gemini API.
 
-Use when a shot needs a photo the app itself cannot provide (for example a
-person doing an exercise). The API key is read from the environment and is
-never written anywhere.
+Use when a screen needs an image as sample data that the user does not have:
+a person for a pose app, a meal for a food app, a skin photo for a dermatology
+app, a product, a receipt, a room, or any other scene. The API key is read
+from the environment and is never written anywhere.
 
   export GEMINI_API_KEY=...            # the user's own key; never put it in a file here
   gemini_image.py --list-models
-  gemini_image.py --prompt "..." --out photos/flexion.png [--aspect 3:4]
-                  [--reference photos/person.png ...] [--model <id>]
+  gemini_image.py --prompt "..." --out images/meal.png [--aspect 4:3]
+                  [--reference images/first.png ...] [--model <id>]
 
---reference sends earlier images back so the same person and room carry over.
-The model comes from --model, else $GEMINI_IMAGE_MODEL, else the first model
-the API lists with "image" in its name. Each output gets a sidecar
-<name>.ai.json recording that it is AI-generated, with the model and prompt,
-so the store's AI-content declaration can be answered correctly later.
+Examples:
+  gemini_image.py --prompt "Grilled salmon with rice on a white plate, from above, phone photo" \\
+                  --aspect 4:3 --out images/meal.png
+  gemini_image.py --prompt "A man in a living room raising his right arm overhead, full body" \\
+                  --aspect 3:4 --out images/pose-1.png
+  gemini_image.py --prompt "Same man, same room, arm out to the side" \\
+                  --reference images/pose-1.png --out images/pose-2.png
+
+--reference sends earlier images back so the same subject and setting carry
+over (the same person, plate or room). The model comes from --model, else
+$GEMINI_IMAGE_MODEL, else the first model the API lists with "image" in its
+name. Each output gets a sidecar <name>.ai.json recording that it is
+AI-generated, with the model and prompt, so the store's AI-content
+declaration can be answered correctly later.
 Uses only the Python standard library.
 """
 import argparse
@@ -59,11 +69,13 @@ def image_models(key):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Generate an image with the Gemini API.")
-    ap.add_argument("--prompt")
-    ap.add_argument("--out")
-    ap.add_argument("--aspect", help='aspect ratio such as "3:4" or "9:16"')
-    ap.add_argument("--reference", action="append", default=[], help="image to keep consistent with (repeatable)")
+    ap = argparse.ArgumentParser(
+        description="Generate a realistic test image (person, meal, skin, product, scene) with the Gemini API. "
+                    "Writes a .ai.json sidecar marking the image as AI-generated.")
+    ap.add_argument("--prompt", help="what the image should show, described the way a user would photograph it")
+    ap.add_argument("--out", help="output image path, for example images/meal.png")
+    ap.add_argument("--aspect", help='aspect ratio such as "4:3", "3:4" or "9:16"')
+    ap.add_argument("--reference", action="append", default=[], help="earlier image whose subject and setting should carry over (repeatable)")
     ap.add_argument("--model")
     ap.add_argument("--list-models", action="store_true")
     a = ap.parse_args()
