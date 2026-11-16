@@ -1,0 +1,40 @@
+{
+  "out": "store-screenshots",
+  "accent": "#00838F",
+  "text": "#141414",
+  "background": "linear-gradient(160deg,#f7f7f7 0%,#ececec 55%,#e2e2e2 100%)",
+  "font": "Montserrat",
+  "sets": [
+    {
+      "dir": "app-store-6.9in-1320x2868",
+      "width": 1320,
+      "height": 2868,
+      "captionHeight": 0.215,
+      "fontSize": 0.083,
+      "rawDir": "raw/ios",
+      "callouts": {
+        "01-main": { "crop": [130, 1240, 1060, 940], "radius": 44, "dy": 0.03 }
+      }
+    },
+    {
+      "dir": "google-play-1440x2560",
+      "width": 1440,
+      "height": 2560,
+      "captionHeight": 0.225,
+      "fontSize": 0.07,
+      "rawDir": "raw/android"
+    }
+  ],
+  "shots": [
+    { "name": "01-main", "source": "home", "caption": "<b>One thing</b> the app does,<br>said plainly." },
+    { "name": "02-result", "source": "result", "caption": "What you <b>get back</b>." }
+  ],
+  "feature": {
+    "appName": "Your App",
+    "icon": "icon.png",
+    "headline": "<b>One thing</b> the app does,<br>said plainly.",
+    "source": "result",
+    "set": "google-play-1440x2560",
+    "out": "feature-graphic-1024x500.png"
+  }
+}
